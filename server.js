@@ -2,6 +2,7 @@ const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
+const { get, list, put } = require("@vercel/blob");
 
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, "data");
@@ -36,6 +37,37 @@ const CATEGORIES = [
 const PRIORITIES = ["Low", "Normal", "High", "Urgent"];
 let writeQueue = Promise.resolve();
 
+function usesBlobStorage() {
+  if (process.env.VERCEL === "1" && !process.env.BLOB_STORE_ID && !process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("Connect a private Vercel Blob store to this project before using the API.");
+  }
+  return process.env.VERCEL === "1" || Boolean(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+async function readBlobRecords(prefix) {
+  const records = [];
+  let cursor;
+  let hasMore = true;
+  while (hasMore) {
+    const page = await list({ prefix, limit: 1000, cursor });
+    for (const blob of page.blobs) {
+      const result = await get(blob.url, { access: "private" });
+      if (!result) throw new Error(`Could not read stored record ${blob.pathname}.`);
+      records.push(JSON.parse(await new Response(result.stream).text()));
+    }
+    cursor = page.cursor;
+    hasMore = page.hasMore;
+  }
+  return records;
+}
+
+async function writeBlobRecord(prefix, value) {
+  await put(`${prefix}${randomUUID()}.json`, JSON.stringify(value), {
+    access: "private",
+    contentType: "application/json"
+  });
+}
+
 function sendJson(response, status, value) {
   response.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
@@ -46,6 +78,7 @@ function sendJson(response, status, value) {
 }
 
 async function readComplaints() {
+  if (usesBlobStorage()) return readBlobRecords("campuscare/complaints/");
   try {
     const contents = await fs.readFile(DATA_FILE, "utf8");
     const complaints = JSON.parse(contents);
@@ -58,6 +91,7 @@ async function readComplaints() {
 }
 
 async function storeComplaint(complaint) {
+  if (usesBlobStorage()) return writeBlobRecord("campuscare/complaints/", complaint);
   writeQueue = writeQueue.then(async () => {
     const complaints = await readComplaints();
     complaints.unshift(complaint);
@@ -70,6 +104,7 @@ async function storeComplaint(complaint) {
 }
 
 async function readRatings() {
+  if (usesBlobStorage()) return readBlobRecords("campuscare/ratings/");
   try {
     const ratings = JSON.parse(await fs.readFile(RATINGS_FILE, "utf8"));
     if (!Array.isArray(ratings)) throw new Error("The rating data file must contain a JSON array.");
@@ -81,6 +116,7 @@ async function readRatings() {
 }
 
 async function storeRating(rating) {
+  if (usesBlobStorage()) return writeBlobRecord("campuscare/ratings/", rating);
   writeQueue = writeQueue.then(async () => {
     const ratings = await readRatings();
     ratings.push(rating);
@@ -93,6 +129,22 @@ async function storeRating(rating) {
 }
 
 function readRequestBody(request) {
+  if (request.body !== undefined) {
+    try {
+      const body = typeof request.body === "string" || Buffer.isBuffer(request.body)
+        ? JSON.parse(request.body.toString())
+        : request.body;
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        throw new Error("Request body must be a JSON object.");
+      }
+      if (Buffer.byteLength(JSON.stringify(body)) > MAX_BODY_BYTES) {
+        return Promise.reject(Object.assign(new Error("Request body is too large."), { status: 413 }));
+      }
+      return Promise.resolve(body);
+    } catch {
+      return Promise.reject(Object.assign(new Error("Request body must be valid JSON."), { status: 400 }));
+    }
+  }
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
@@ -240,7 +292,7 @@ async function serveStatic(response, pathname) {
   }
 }
 
-const server = http.createServer(async (request, response) => {
+async function handleRequest(request, response) {
   try {
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
     if (url.pathname.startsWith("/api/")) await handleApi(request, response, url);
@@ -253,8 +305,13 @@ const server = http.createServer(async (request, response) => {
     });
     else response.destroy();
   }
-});
+}
 
-server.listen(PORT, "127.0.0.1", () => {
-  console.log(`CampusCare is running at http://127.0.0.1:${PORT}`);
-});
+module.exports = handleRequest;
+
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, "127.0.0.1", () => {
+    console.log(`CampusCare is running at http://127.0.0.1:${PORT}`);
+  });
+}
