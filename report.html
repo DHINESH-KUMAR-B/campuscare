@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c2c">
+  <title>Submit a campus concern — DAIT CampusCare</title>
+  <style>
+    :root { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #edf5ee; background: #10251a; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; padding: 30px 18px 52px; background: radial-gradient(ellipse at top right, #1e5138, transparent 48%), #10251a; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(720px, 100%); margin: auto; }
+    .back { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 26px; color: #c3d4c6; font-size: 13px; }
+    .back:hover { color: white; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+    .brand img { width: 65px; height: 46px; object-fit: contain; border-radius: 7px; background: white; }
+    .brand strong { display: block; font-size: 17px; }
+    .brand span { display: block; margin-top: 4px; color: #a8bcaa; font-size: 11px; }
+    .card { padding: clamp(22px, 5vw, 42px); border: 1px solid #355341; border-radius: 20px; background: rgba(20, 48, 33, .93); box-shadow: 0 22px 64px rgba(0, 0, 0, .23); }
+    .eyebrow { color: #9cdda6; font-size: 11px; font-weight: 750; letter-spacing: 1.4px; text-transform: uppercase; }
+    h1 { margin: 10px 0 9px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(34px, 8vw, 48px); font-weight: 500; letter-spacing: -1px; }
+    .intro { margin: 0 0 25px; color: #b5c8b8; font-size: 14px; line-height: 1.7; }
+    form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .full { grid-column: 1 / -1; }
+    label { color: #d8e5da; font-size: 12px; font-weight: 650; }
+    input, select, textarea { width: 100%; min-height: 44px; padding: 11px 12px; border: 1px solid #45604d; border-radius: 9px; outline: none; background: #10251a; color: #f3f7f3; font: inherit; font-size: 13px; }
+    input::placeholder, textarea::placeholder { color: #879b8a; }
+    input:focus, select:focus, textarea:focus { border-color: #9cdda6; box-shadow: 0 0 0 3px #9cdda61c; }
+    textarea { min-height: 135px; resize: vertical; line-height: 1.6; }
+    .hint { color: #a8bcaa; font-size: 11px; line-height: 1.55; }
+    .submit { min-height: 46px; padding: 0 18px; border: 0; border-radius: 9px; background: #54a96b; color: #092214; font-weight: 750; cursor: pointer; }
+    .submit:hover { background: #78c687; }
+    .status { min-height: 18px; margin: 0; color: #b7e9bd; font-size: 12px; line-height: 1.6; }
+    .notice { margin: 20px 0 0; padding: 12px 14px; border: 1px solid #536847; border-radius: 9px; color: #d7dda9; background: #3b401e77; font-size: 11px; line-height: 1.55; }
+    @media(max-width: 560px) { form { grid-template-columns: 1fr; } .full { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="index.html#services">← Back to all concern types</a>
+    <div class="brand">
+      <img src="assets/dait-campus.png" alt="Dhaanish Tech College campus">
+      <div><strong>DAIT CampusCare</strong><span>Dhaanish I Tech College · Coimbatore</span></div>
+    </div>
+    <section class="card" aria-labelledby="title">
+      <span class="eyebrow">Your voice matters</span>
+      <h1 id="title">Submit a concern</h1>
+      <p class="intro" id="intro">Choose the closest category and tell us what needs attention. You’ll receive a reference number to track your report.</p>
+      <form id="complaint-form">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" autocomplete="name" maxlength="70" required>
+        </div>
+        <div class="field">
+          <label for="email">College email</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="120" required>
+        </div>
+        <div class="field">
+          <label for="category">Concern type</label>
+          <select id="category" name="category" required>
+            <option>Hostel</option><option>Food &amp; Dining</option><option>Campus Cleanliness</option>
+            <option>Laundry</option><option>Ironing Service</option><option>Anti-Ragging</option>
+            <option>Cellphone &amp; Network</option><option>Clubs &amp; Activities</option><option>RO Water</option>
+            <option>Facilities &amp; Maintenance</option><option>Lab &amp; Laboratory</option><option>Faculty &amp; Teaching</option>
+            <option>Sports &amp; Cultural Activities</option><option>Network Services</option><option>Technology Support</option>
+            <option>Emergency &amp; Medical</option><option>Academic Support</option><option>Campus Safety</option>
+            <option>IT &amp; Wi-Fi</option><option>Wellbeing &amp; Accessibility</option><option>Transport</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="priority">How urgent is it?</label>
+          <select id="priority" name="priority" required>
+            <option>Normal</option><option>Low</option><option>High</option><option>Urgent</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="location">Where did it happen?</label>
+          <input id="location" name="location" maxlength="120" placeholder="Hostel block, room, building, or area" required>
+        </div>
+        <div class="field full">
+          <label for="description">Describe the concern</label>
+          <textarea id="description" name="description" minlength="8" maxlength="2000" placeholder="Include the details that will help the college team understand and respond." required></textarea>
+          <span class="hint">For immediate danger, contact campus security or local emergency services directly.</span>
+        </div>
+        <div class="field full">
+          <button class="submit" type="submit">Submit concern</button>
+          <p class="status" id="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+      <p class="notice">This prototype stores reports in the local backend on the computer running the website. It does not yet notify college staff. Add access controls and configure college review workflows before deploying it for real reports.</p>
+    </section>
+  </main>
+  <script>
+    const descriptions = {
+      "Hostel": "Room, water, maintenance, safety, or other hostel-related issues.",
+      "Food & Dining": "Report dining hall food quality, cleanliness, menu, or service concerns.",
+      "Campus Cleanliness": "Tell us about litter, washrooms, bins, or campus cleaning needs.",
+      "Laundry": "Report laundry collection, delivery, machine, or service issues.",
+      "Ironing Service": "Share a concern about the hostel or campus ironing service.",
+      "Anti-Ragging": "Report ragging, bullying, harassment, or a student safety concern.",
+      "Cellphone & Network": "Report poor mobile signal or cellphone connectivity around campus.",
+      "Clubs & Activities": "Share feedback about a student club, event, or campus activity.",
+      "RO Water": "Report an RO water purifier, drinking water, or water quality issue.",
+      "Emergency & Medical": "For a medical emergency or immediate danger, call the HOD / campus facilities at 9080008298.",
+      "Lab & Laboratory": "Report an issue with lab equipment, access, facilities, or safety.",
+      "Faculty & Teaching": "Share a concern about teaching, classroom communication, or academic support.",
+      "Sports & Cultural Activities": "Report a concern about sports facilities, events, or cultural activities.",
+      "Network Services": "Report a problem with the campus network or internet connection.",
+      "Technology Support": "Report an issue with classroom technology, devices, or software."
+    };
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get("service");
+    const category = document.getElementById("category");
+    if (requestedCategory && Array.from(category.options).some(option => option.value === requestedCategory || option.text === requestedCategory)) {
+      category.value = requestedCategory;
+      document.getElementById("intro").textContent = descriptions[category.value] || "Choose the closest category and tell us what needs attention.";
+      document.getElementById("title").textContent = `${category.value} concern`;
+      document.title = `${category.value} concern — DAIT CampusCare`;
+      if (category.value === "Emergency & Medical") {
+        const hint = document.querySelector(".hint");
+        hint.innerHTML = 'Need immediate help? Call the HOD / campus facilities at <a href="tel:9080008298">9080008298</a>. For urgent danger, call emergency services.';
+      }
+    }
+    document.getElementById("complaint-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.reportValidity()) return;
+      const button = form.querySelector("button[type=submit]");
+      const status = document.getElementById("form-status");
+      button.disabled = true;
+      status.textContent = "Submitting your concern…";
+      try {
+        const response = await fetch("/api/complaints", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "The server could not accept the report.");
+        status.textContent = `Submitted successfully. Your reference number is ${result.complaint.id}. Keep it to check your status.`;
+        form.reset();
+        category.value = requestedCategory || "";
+      } catch (error) {
+        status.textContent = `${error.message} Make sure the backend is running with: node server.js`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
