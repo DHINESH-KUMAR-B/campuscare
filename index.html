@@ -191,6 +191,17 @@
     .status-summary article { padding: 12px; border: 1px solid #385640; border-radius: 9px; background: #102a1a; }
     .status-summary span { display: block; color: #b8cabb; font-size: 10px; }
     .status-summary strong { display: block; margin-top: 5px; color: #a2dfa8; font-size: 20px; }
+    .analytics-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; margin-top: 13px; }
+    .mini-chart-card { min-width: 0; padding: 15px; border: 1px solid #385640; border-radius: 10px; background: #102a1a; }
+    .mini-chart-card h3 { margin: 0; font-size: 11px; }
+    .mini-chart-card p { margin: 4px 0 13px; color: #b8cabb; font-size: 9px; }
+    .mini-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); align-items: end; gap: 9px; min-height: 126px; }
+    .mini-chart-column { display: grid; grid-template-rows: 15px 1fr auto; align-items: end; gap: 6px; min-width: 0; height: 126px; text-align: center; }
+    .mini-chart-value { color: #dceade; font-size: 9px; font-weight: 700; }
+    .mini-chart-track { display: flex; width: 100%; height: 100%; align-items: end; justify-content: center; overflow: hidden; border-radius: 5px 5px 2px 2px; background: #203d29; }
+    .mini-chart-bar { display: block; width: min(28px, 66%); min-height: 0; border-radius: 4px 4px 0 0; background: linear-gradient(0deg, #3b8850, #91d39a); }
+    .mini-chart-label { min-height: 22px; color: #c7d7c9; font-size: 8px; line-height: 1.3; overflow-wrap: anywhere; }
+    .mini-chart-empty { grid-column: 1 / -1; align-self: center; padding: 18px 8px; color: #b8cabb; font-size: 10px; text-align: center; }
     .track-form { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 9px; padding: 0 20px 14px; }
     .track-form .field { gap: 5px; }
     .track-form label { color: #cbd9cd; font-size: 10px; }
@@ -465,6 +476,22 @@
       <div class="status-summary" id="status-summary" aria-label="Complaint totals by status">
         <div class="analysis-empty">Loading status summary…</div>
       </div>
+      <div class="analytics-charts">
+        <section class="mini-chart-card">
+          <h3>Reports by status</h3>
+          <p>Compare the number of reports at each stage.</p>
+          <div class="mini-chart" id="status-chart" aria-label="Reports by status chart" aria-live="polite">
+            <div class="mini-chart-empty">Loading status chart…</div>
+          </div>
+        </section>
+        <section class="mini-chart-card">
+          <h3>Reports by priority</h3>
+          <p>See how urgent reports are distributed.</p>
+          <div class="mini-chart" id="priority-chart" aria-label="Reports by priority chart" aria-live="polite">
+            <div class="mini-chart-empty">Loading priority chart…</div>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section id="register" aria-labelledby="register-title">
@@ -722,6 +749,24 @@
         document.getElementById("list-count").textContent = `Showing ${visible.length} recent ${visible.length === 1 ? "update" : "updates"}`;
       }
 
+      function renderMiniChart(element, entries, emptyMessage) {
+        if (!entries.length) {
+          element.innerHTML = `<div class="mini-chart-empty">${escapeHTML(emptyMessage)}</div>`;
+          return;
+        }
+        const max = Math.max(...entries.map(([, count]) => count), 1);
+        element.innerHTML = entries.map(([label, count]) => {
+          const height = count ? Math.max(5, Math.round(count / max * 100)) : 0;
+          return `<div class="mini-chart-column">
+            <span class="mini-chart-value">${count}</span>
+            <div class="mini-chart-track" role="img" aria-label="${escapeHTML(label)}: ${count}">
+              <span class="mini-chart-bar" style="height:${height}%"></span>
+            </div>
+            <span class="mini-chart-label">${escapeHTML(label)}</span>
+          </div>`;
+        }).join("");
+      }
+
       async function loadDashboard() {
         try {
           const [complaintResponse, analyticsResponse] = await Promise.all([
@@ -771,11 +816,25 @@
             const count = status === "Urgent priority" ? analytics.byPriority.Urgent || 0 : analytics.byStatus[status] || 0;
             return `<article><span>${status}</span><strong>${count}</strong></article>`;
           }).join("");
+          renderMiniChart(
+            document.getElementById("status-chart"),
+            Object.entries(analytics.byStatus).sort((a, b) => b[1] - a[1]),
+            "Status graphs will appear when concerns are reported."
+          );
+          renderMiniChart(
+            document.getElementById("priority-chart"),
+            Object.entries(analytics.byPriority).sort((a, b) => b[1] - a[1]),
+            "Priority graphs will appear when concerns are reported."
+          );
         } catch (error) {
           console.error("Could not load complaint dashboard.", error);
           list.innerHTML = '<div class="empty-state">The backend is unavailable. Start it with <code>npm start</code>.</div>';
           document.getElementById("analysis-grid").innerHTML =
             '<div class="analysis-empty">Complaint analysis is unavailable until the backend is running.</div>';
+          document.getElementById("status-chart").innerHTML =
+            '<div class="mini-chart-empty">Status graph is unavailable.</div>';
+          document.getElementById("priority-chart").innerHTML =
+            '<div class="mini-chart-empty">Priority graph is unavailable.</div>';
         }
       }
 

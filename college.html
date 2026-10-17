@@ -65,6 +65,7 @@
     .metric span { display: block; color: #77857b; font-size: 10px; font-weight: 700; }
     .metric strong { display: block; margin-top: 8px; color: #1d4930; font-size: 27px; font-weight: 750; }
     .staff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-top: 13px; }
+    .graph-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-top: 13px; }
     .data-card { padding: 20px; border: 1px solid #e0e7df; border-radius: 13px; background: #fff; }
     .data-card h3 { margin-bottom: 4px; font-size: 13px; }
     .data-card > p { margin-bottom: 17px; color: #77857b; font-size: 10px; }
@@ -74,6 +75,14 @@
     .bar-label strong { color: #244d34; }
     .bar-track { height: 6px; overflow: hidden; border-radius: 8px; background: #edf1ec; }
     .bar-fill { display: block; height: 100%; min-width: 3px; border-radius: inherit; background: linear-gradient(90deg, #27764b, #86bd7e); }
+    .donut-layout { display: flex; align-items: center; gap: 16px; }
+    .donut-graph { position: relative; display: grid; width: 126px; height: 126px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #e9efe8; }
+    .donut-graph::after { position: absolute; width: 68px; height: 68px; border-radius: 50%; background: #fff; content: ""; }
+    .donut-graph span { z-index: 1; color: #244d34; font-size: 11px; font-weight: 800; line-height: 1.35; text-align: center; }
+    .donut-legend { display: grid; gap: 8px; min-width: 0; max-height: 165px; overflow-y: auto; }
+    .donut-legend-item { display: flex; align-items: center; gap: 7px; color: #53675a; font-size: 10px; line-height: 1.4; }
+    .donut-legend-item span:last-child { overflow-wrap: anywhere; }
+    .donut-legend-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; }
     .empty { padding: 16px 12px; border-radius: 9px; background: #f4f7f3; color: #718075; font-size: 11px; line-height: 1.6; }
     .load-error { padding: 14px; border: 1px solid #edc9c5; border-radius: 9px; background: #fff4f2; color: #8b3830; font-size: 11px; line-height: 1.6; }
     .load-state { margin-top: 12px; color: #6d7f71; font-size: 10px; }
@@ -87,6 +96,7 @@
       .quick-grid { grid-template-columns: 1fr; }
       .quick-card { min-height: auto; }
       .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .graph-grid { grid-template-columns: 1fr 1fr; }
     }
     @media(max-width: 520px) {
       .shell { width: min(100% - 30px, 460px); }
@@ -101,6 +111,7 @@
       .actions { grid-template-columns: 1fr; }
       .staff-heading { align-items: flex-start; flex-direction: column; }
       .staff-grid { grid-template-columns: 1fr; }
+      .graph-grid { grid-template-columns: 1fr; }
       .data-card { padding: 17px; }
       .footer-row { align-items: flex-start; flex-direction: column; justify-content: center; padding: 13px 0; }
     }
@@ -203,6 +214,24 @@
           </div>`).join("")}</div>`;
       }
 
+      function renderDonut(entries, total, emptyMessage) {
+        if (!entries.length || !total) return `<div class="empty">${emptyMessage}</div>`;
+        const colors = ["#27764b", "#78a967", "#d69a42", "#568cb0", "#bd6e69", "#8e79b6", "#54a8a0", "#c178a3"];
+        let offset = 0;
+        const slices = entries.map(([, count], index) => {
+          const start = offset;
+          offset += count / total * 100;
+          return `${colors[index % colors.length]} ${start.toFixed(2)}% ${offset.toFixed(2)}%`;
+        }).join(", ");
+        return `<div class="donut-layout">
+          <div class="donut-graph" role="img" aria-label="${entries.map(([category, count]) => `${escapeHTML(category)}: ${Math.round(count / total * 100)}%`).join(", ")}" style="background:conic-gradient(${slices})">
+            <span>${total}<br>${total === 1 ? "report" : "reports"}</span>
+          </div>
+          <div class="donut-legend">${entries.map(([category, count], index) => `
+            <div class="donut-legend-item"><i class="donut-legend-dot" style="background:${colors[index % colors.length]}"></i><span>${escapeHTML(category)} · ${Math.round(count / total * 100)}%</span></div>`).join("")}</div>
+        </div>`;
+      }
+
       async function loadOverview() {
         dashboard.innerHTML = '<div class="empty">Loading the latest campus overview…</div>';
         updated.textContent = "";
@@ -227,6 +256,7 @@
             : "—";
           const categories = Object.entries(analytics.byCategory || {}).sort((a, b) => b[1] - a[1]);
           const statuses = Object.entries(analytics.byStatus || {}).sort((a, b) => b[1] - a[1]);
+          const priorities = Object.entries(analytics.byPriority || {}).sort((a, b) => b[1] - a[1]);
           dashboard.innerHTML = `
             <div class="metric-grid">
               <article class="metric"><span>Total concerns</span><strong>${analytics.total}</strong></article>
@@ -234,9 +264,10 @@
               <article class="metric"><span>Resolved</span><strong>${resolved}</strong></article>
               <article class="metric"><span>Service rating</span><strong>${ratingAverage}</strong></article>
             </div>
-            <div class="staff-grid">
-              <section class="data-card"><h3>Concerns by category</h3><p>Aggregate counts only</p>${renderBars(categories, "No concern reports have been recorded yet.")}</section>
-              <section class="data-card"><h3>Concerns by status</h3><p>Aggregate counts only</p>${renderBars(statuses, "Status totals appear when concerns are reported.")}</section>
+            <div class="graph-grid">
+              <section class="data-card"><h3>Reports by category</h3><p>Share of all reports</p>${renderDonut(categories, analytics.total, "Category graph will appear when concerns are reported.")}</section>
+              <section class="data-card"><h3>Reports by status</h3><p>Aggregate counts only</p>${renderBars(statuses, "Status graph will appear when concerns are reported.")}</section>
+              <section class="data-card"><h3>Reports by priority</h3><p>Aggregate counts only</p>${renderBars(priorities, "Priority graph will appear when concerns are reported.")}</section>
             </div>`;
           updated.textContent = `Overview refreshed ${new Date().toLocaleTimeString()}. ${ratingCount} service rating${ratingCount === 1 ? "" : "s"} recorded.`;
           loaded = true;
