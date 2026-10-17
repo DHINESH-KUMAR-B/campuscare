@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f1">
+  <meta name="description" content="Student support and a live campus service overview for Dhaanish I Tech College.">
+  <title>College Portal — DAIT CampusCare</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #193326;
+      background: #f4f6f1;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; min-height: 76px; border-bottom: 1px solid #dce4db; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { display: block; width: 166px; height: 45px; object-fit: contain; object-position: left center; }
+    .brand-copy { padding-left: 12px; border-left: 1px solid #d5ded5; }
+    .brand-copy strong, .brand-copy span { display: block; }
+    .brand-copy strong { font-size: 13px; }
+    .brand-copy span { margin-top: 3px; color: #718176; font-size: 10px; }
+    .home-link { color: #486653; font-size: 12px; font-weight: 700; }
+    .home-link:hover { color: #14784b; }
+    main { padding: 42px 0 64px; }
+    .eyebrow { color: #37815a; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin: 10px 0 10px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(36px, 5vw, 54px); font-weight: 500; letter-spacing: -1.8px; line-height: 1.05; }
+    .intro { max-width: 600px; margin-bottom: 0; color: #64776a; font-size: 14px; line-height: 1.7; }
+    .access-note { display: flex; align-items: flex-start; gap: 10px; margin: 25px 0 27px; padding: 13px 15px; border: 1px solid #ead8a8; border-radius: 10px; background: #fff9e9; color: #675325; font-size: 11px; line-height: 1.6; }
+    .access-note strong { color: #4e3a12; }
+    .portal-switch { display: flex; gap: 8px; padding: 5px; border: 1px solid #dce4db; border-radius: 12px; background: #eaf0e9; }
+    .portal-tab { flex: 1; min-height: 42px; border: 0; border-radius: 8px; background: transparent; color: #5e7464; font-size: 12px; font-weight: 750; cursor: pointer; }
+    .portal-tab[aria-selected="true"] { background: #fff; color: #17643c; box-shadow: 0 2px 8px #18362512; }
+    .panel { margin-top: 18px; }
+    .panel[hidden] { display: none; }
+    .welcome-card { position: relative; overflow: hidden; display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; align-items: center; min-height: 230px; padding: clamp(24px, 5vw, 44px); border-radius: 18px; background: linear-gradient(120deg, #123b2a, #20583b); color: #f3f8f2; }
+    .welcome-card::after { position: absolute; right: -95px; bottom: -190px; width: 370px; height: 370px; border: 1px solid #ffffff24; border-radius: 50%; box-shadow: 0 0 0 42px #ffffff08, 0 0 0 84px #ffffff08; content: ""; pointer-events: none; }
+    .welcome-card .eyebrow { color: #a4ddb1; }
+    .welcome-card h2 { max-width: 480px; margin: 10px 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(26px, 4vw, 38px); font-weight: 500; letter-spacing: -.8px; line-height: 1.16; }
+    .welcome-card p { max-width: 490px; margin-bottom: 0; color: #cfdfd1; font-size: 12px; line-height: 1.7; }
+    .actions { z-index: 1; display: grid; gap: 10px; }
+    .action-link { display: flex; align-items: center; justify-content: space-between; min-height: 53px; padding: 0 16px; border: 1px solid #ffffff40; border-radius: 10px; background: #ffffff12; color: #fff; font-size: 12px; font-weight: 750; transition: background .18s, transform .18s; }
+    .action-link:hover { transform: translateY(-1px); background: #ffffff24; }
+    .action-link.primary { border-color: #b0e0ae; background: #b0e0ae; color: #153926; }
+    .action-link.primary:hover { background: #c6eac2; }
+    .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 14px; }
+    .quick-card { min-height: 112px; padding: 18px; border: 1px solid #e0e7df; border-radius: 13px; background: #fff; }
+    .quick-card strong { display: block; margin-bottom: 7px; font-size: 12px; }
+    .quick-card p { margin-bottom: 0; color: #738176; font-size: 11px; line-height: 1.6; }
+    .staff-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 26px 0 15px; }
+    .staff-heading h2 { margin: 7px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 500; letter-spacing: -.6px; }
+    .staff-heading p { margin: 0; color: #708075; font-size: 11px; }
+    .refresh { min-height: 37px; padding: 0 13px; border: 1px solid #cddbd0; border-radius: 8px; background: #fff; color: #246442; font-size: 11px; font-weight: 750; cursor: pointer; }
+    .refresh:hover { border-color: #7ca98a; background: #f8fcf8; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .metric { min-height: 102px; padding: 17px; border: 1px solid #e0e7df; border-radius: 12px; background: #fff; }
+    .metric span { display: block; color: #77857b; font-size: 10px; font-weight: 700; }
+    .metric strong { display: block; margin-top: 8px; color: #1d4930; font-size: 27px; font-weight: 750; }
+    .staff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-top: 13px; }
+    .data-card { padding: 20px; border: 1px solid #e0e7df; border-radius: 13px; background: #fff; }
+    .data-card h3 { margin-bottom: 4px; font-size: 13px; }
+    .data-card > p { margin-bottom: 17px; color: #77857b; font-size: 10px; }
+    .bars { display: grid; gap: 12px; }
+    .bar-row { display: grid; gap: 6px; }
+    .bar-label { display: flex; justify-content: space-between; gap: 14px; color: #53675a; font-size: 10px; }
+    .bar-label strong { color: #244d34; }
+    .bar-track { height: 6px; overflow: hidden; border-radius: 8px; background: #edf1ec; }
+    .bar-fill { display: block; height: 100%; min-width: 3px; border-radius: inherit; background: linear-gradient(90deg, #27764b, #86bd7e); }
+    .empty { padding: 16px 12px; border-radius: 9px; background: #f4f7f3; color: #718075; font-size: 11px; line-height: 1.6; }
+    .load-error { padding: 14px; border: 1px solid #edc9c5; border-radius: 9px; background: #fff4f2; color: #8b3830; font-size: 11px; line-height: 1.6; }
+    .load-state { margin-top: 12px; color: #6d7f71; font-size: 10px; }
+    footer { border-top: 1px solid #dce4db; }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 66px; color: #77857b; font-size: 10px; }
+    .footer-row a { color: #37664a; font-weight: 750; }
+    :focus-visible { outline: 3px solid #64a779; outline-offset: 3px; }
+    @media(max-width: 760px) {
+      .welcome-card { grid-template-columns: 1fr; }
+      .actions { grid-template-columns: 1fr 1fr; }
+      .quick-grid { grid-template-columns: 1fr; }
+      .quick-card { min-height: auto; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width: 520px) {
+      .shell { width: min(100% - 30px, 460px); }
+      .topbar { min-height: 66px; }
+      .brand img { width: 112px; height: 38px; }
+      .brand-copy { padding-left: 8px; }
+      .brand-copy strong { font-size: 11px; }
+      .brand-copy span { font-size: 9px; }
+      main { padding-top: 30px; }
+      .portal-switch { gap: 4px; }
+      .portal-tab { padding: 0 7px; font-size: 10px; }
+      .actions { grid-template-columns: 1fr; }
+      .staff-heading { align-items: flex-start; flex-direction: column; }
+      .staff-grid { grid-template-columns: 1fr; }
+      .data-card { padding: 17px; }
+      .footer-row { align-items: flex-start; flex-direction: column; justify-content: center; padding: 13px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="index.html" aria-label="DAIT CampusCare home">
+      <img src="assets/dait-full-wordmark.png" alt="DAIT">
+      <span class="brand-copy"><strong>CampusCare</strong><span>College portal</span></span>
+    </a>
+    <a class="home-link" href="index.html">← CampusCare home</a>
+  </header>
+  <main class="shell">
+    <span class="eyebrow">Dhaanish I Tech College · Coimbatore</span>
+    <h1>College portal</h1>
+    <p class="intro">A clear place for students to get support and for the college community to see how campus services are doing.</p>
+    <aside class="access-note">
+      <span aria-hidden="true">ⓘ</span>
+      <span><strong>Public preview, no sign-in.</strong> The staff view below contains aggregate statistics only. It does not show student identities or report details, and it is not a private staff case-management system.</span>
+    </aside>
+
+    <div class="portal-switch" role="tablist" aria-label="Portal area">
+      <button class="portal-tab" id="student-tab" type="button" role="tab" aria-selected="true" aria-controls="student-panel">Student support</button>
+      <button class="portal-tab" id="staff-tab" type="button" role="tab" aria-selected="false" aria-controls="staff-panel" tabindex="-1">College overview</button>
+    </div>
+
+    <section class="panel" id="student-panel" role="tabpanel" aria-labelledby="student-tab">
+      <div class="welcome-card">
+        <div>
+          <span class="eyebrow">Student support</span>
+          <h2>Your campus, your voice. We’re here to listen.</h2>
+          <p>Share a concern with the right campus team, or check the latest status using your reference number and college email.</p>
+        </div>
+        <div class="actions">
+          <a class="action-link primary" href="report.html">Submit a concern <span aria-hidden="true">→</span></a>
+          <a class="action-link" href="index.html#tracking">Track a submitted concern <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <div class="quick-grid">
+        <article class="quick-card"><strong>Campus services</strong><p>Choose a concern type such as hostel, dining, facilities, transport, or IT support.</p></article>
+        <article class="quick-card"><strong>Follow your report</strong><p>Keep your reference number. You’ll need it and your college email to check status.</p></article>
+        <article class="quick-card"><strong>Need immediate help?</strong><p>For immediate danger or a medical emergency, contact campus staff or local emergency services.</p></article>
+      </div>
+    </section>
+
+    <section class="panel" id="staff-panel" role="tabpanel" aria-labelledby="staff-tab" hidden>
+      <div class="staff-heading">
+        <div>
+          <span class="eyebrow">College community</span>
+          <h2>Campus service overview</h2>
+          <p>Live aggregate totals from CampusCare. Individual concern information is intentionally not shown here.</p>
+        </div>
+        <button class="refresh" id="refresh-data" type="button">Refresh overview</button>
+      </div>
+      <div id="dashboard-content" aria-live="polite">
+        <div class="empty">Loading the latest campus overview…</div>
+      </div>
+      <p class="load-state" id="data-updated" role="status"></p>
+    </section>
+  </main>
+  <footer>
+    <div class="shell footer-row"><span>DAIT CampusCare · Dhaanish I Tech College, Coimbatore</span><a href="index.html">Return to CampusCare</a></div>
+  </footer>
+  <script>
+    (() => {
+      const studentTab = document.getElementById("student-tab");
+      const staffTab = document.getElementById("staff-tab");
+      const studentPanel = document.getElementById("student-panel");
+      const staffPanel = document.getElementById("staff-panel");
+      const dashboard = document.getElementById("dashboard-content");
+      const updated = document.getElementById("data-updated");
+      let loaded = false;
+
+      function selectPanel(panel) {
+        const showStaff = panel === "staff";
+        studentTab.setAttribute("aria-selected", String(!showStaff));
+        staffTab.setAttribute("aria-selected", String(showStaff));
+        studentTab.tabIndex = showStaff ? -1 : 0;
+        staffTab.tabIndex = showStaff ? 0 : -1;
+        studentPanel.hidden = showStaff;
+        staffPanel.hidden = !showStaff;
+        history.replaceState(null, "", showStaff ? "#college-overview" : "#student-support");
+        if (showStaff && !loaded) loadOverview();
+      }
+
+      function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      function renderBars(entries, emptyMessage) {
+        if (!entries.length) return `<div class="empty">${emptyMessage}</div>`;
+        const max = Math.max(...entries.map(([, count]) => count), 1);
+        return `<div class="bars">${entries.map(([label, count]) => `
+          <div class="bar-row">
+            <div class="bar-label"><span>${escapeHTML(label)}</span><strong>${count}</strong></div>
+            <div class="bar-track"><span class="bar-fill" style="width:${Math.max(3, Math.round(count / max * 100))}%"></span></div>
+          </div>`).join("")}</div>`;
+      }
+
+      async function loadOverview() {
+        dashboard.innerHTML = '<div class="empty">Loading the latest campus overview…</div>';
+        updated.textContent = "";
+        document.getElementById("refresh-data").disabled = true;
+        try {
+          const [analyticsResponse, ratingsResponse] = await Promise.all([
+            fetch("/api/analytics", { cache: "no-store" }),
+            fetch("/api/ratings", { cache: "no-store" })
+          ]);
+          if (!analyticsResponse.ok || !ratingsResponse.ok) {
+            throw new Error("The service could not load the campus data. Please try again.");
+          }
+          const [analytics, ratingData] = await Promise.all([
+            analyticsResponse.json(), ratingsResponse.json()
+          ]);
+          const inProgress = (analytics.byStatus["In review"] || 0) + (analytics.byStatus["In progress"] || 0);
+          const resolved = analytics.byStatus.Resolved || 0;
+          const ratings = Object.values(ratingData.ratings || {});
+          const ratingCount = ratings.reduce((sum, item) => sum + item.count, 0);
+          const ratingAverage = ratingCount
+            ? (ratings.reduce((sum, item) => sum + item.average * item.count, 0) / ratingCount).toFixed(1)
+            : "—";
+          const categories = Object.entries(analytics.byCategory || {}).sort((a, b) => b[1] - a[1]);
+          const statuses = Object.entries(analytics.byStatus || {}).sort((a, b) => b[1] - a[1]);
+          dashboard.innerHTML = `
+            <div class="metric-grid">
+              <article class="metric"><span>Total concerns</span><strong>${analytics.total}</strong></article>
+              <article class="metric"><span>Being reviewed</span><strong>${inProgress}</strong></article>
+              <article class="metric"><span>Resolved</span><strong>${resolved}</strong></article>
+              <article class="metric"><span>Service rating</span><strong>${ratingAverage}</strong></article>
+            </div>
+            <div class="staff-grid">
+              <section class="data-card"><h3>Concerns by category</h3><p>Aggregate counts only</p>${renderBars(categories, "No concern reports have been recorded yet.")}</section>
+              <section class="data-card"><h3>Concerns by status</h3><p>Aggregate counts only</p>${renderBars(statuses, "Status totals appear when concerns are reported.")}</section>
+            </div>`;
+          updated.textContent = `Overview refreshed ${new Date().toLocaleTimeString()}. ${ratingCount} service rating${ratingCount === 1 ? "" : "s"} recorded.`;
+          loaded = true;
+        } catch (error) {
+          console.error("Could not load college portal overview.", error);
+          dashboard.innerHTML = `<div class="load-error">${escapeHTML(error.message || "The campus overview could not be loaded.")}</div>`;
+        } finally {
+          document.getElementById("refresh-data").disabled = false;
+        }
+      }
+
+      studentTab.addEventListener("click", () => selectPanel("student"));
+      staffTab.addEventListener("click", () => selectPanel("staff"));
+      studentTab.addEventListener("keydown", event => {
+        if (event.key === "ArrowRight") { event.preventDefault(); staffTab.focus(); selectPanel("staff"); }
+      });
+      staffTab.addEventListener("keydown", event => {
+        if (event.key === "ArrowLeft") { event.preventDefault(); studentTab.focus(); selectPanel("student"); }
+      });
+      document.getElementById("refresh-data").addEventListener("click", loadOverview);
+      if (window.location.hash === "#college-overview") selectPanel("staff");
+    })();
+  </script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 CampusCare is a campus service reporting and complaint-tracking app for Dhaanish I Tech College.
 
+The separate college portal is available at `/college.html`. Its student area links to concern submission and tracking; the college overview reads aggregate complaint and rating totals from the API. The portal currently has no sign-in, so its staff overview is public and read-only, with no individual report details. Do not use it as a private staff case-management system until authentication and role-based access are implemented.
+
 ## Run locally
 
 1. Install [Node.js](https://nodejs.org/).

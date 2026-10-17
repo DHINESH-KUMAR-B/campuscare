@@ -5,7 +5,7 @@ const root = __dirname;
 const output = path.join(root, "public");
 
 fs.mkdirSync(path.join(output, "assets"), { recursive: true });
-for (const file of ["index.html", "report.html"]) {
+for (const file of ["index.html", "report.html", "college.html"]) {
   fs.copyFileSync(path.join(root, file), path.join(output, file));
 }
 fs.cpSync(path.join(root, "assets"), path.join(output, "assets"), { recursive: true });

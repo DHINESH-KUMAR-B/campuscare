@@ -142,7 +142,7 @@
         form.reset();
         category.value = requestedCategory || "";
       } catch (error) {
-        status.textContent = `${error.message} Make sure the backend is running with: node server.js`;
+        status.textContent = `${error.message} Make sure the backend is running with: npm start`;
       } finally {
         button.disabled = false;
       }
